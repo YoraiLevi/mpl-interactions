@@ -103,3 +103,24 @@ def test_title():
     iplt.title("E={E:.2e}", controls=ctrls)
     assert ax.get_title() == expected
     plt.close()
+
+
+@check_figures_equal(extensions=["png"])
+def test_imshow_extend(fig_test, fig_ref):
+    # and by proxy all the scalar handling
+
+    arr = np.random.randn(10, 10) * 10
+
+    def extent(xmin_xmax, ymin_ymax):
+        xmin, xmax = xmin_xmax
+        ymin, ymax = ymin_ymax
+        return (xmin, xmax, ymin, ymax)
+
+    test_ax = fig_test.add_subplot()
+    ctrls = iplt.imshow(arr, xmin_xmax=("r", 0, 10), ymin_ymax=("r", 0, 10), ax=test_ax)
+    set_param_values(ctrls, {"xmin_xmax": (5.5, 7), "ymin_ymax": (3, 5)})
+    ref_ax = fig_ref.add_subplot()
+    print(ctrls.params)
+    ref_ax.imshow(arr, extent=extent(ctrls.params["xmin_xmax"], ctrls.params["ymin_ymax"]))
+    for fig in ctrls.control_figures:
+        plt.close(fig)

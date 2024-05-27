@@ -655,6 +655,7 @@ def interactive_scatter(
 # of `matplotlib.pyplot.imshow`
 def interactive_imshow(
     X,
+    extent=None,
     alpha=None,
     vmin=None,
     vmax=None,
@@ -676,6 +677,8 @@ def interactive_imshow(
     X : function or image like
         If a function it must return an image-like object. See matplotlib.pyplot.imshow for the
         full set of valid options.
+    extent : tuple of 4 floats, callable
+        
     alpha : float, callable, shorthand for slider or indexed controls
         The alpha value of the image. Can accept a float for a fixed value,
         or any slider shorthand to control with a slider, or an indexed controls
@@ -773,6 +776,8 @@ def interactive_imshow(
         # hasn't been changed
         if isinstance(alpha, Callable):
             im.set_alpha(callable_else_value_no_cast(alpha, param_excluder(params, "alpha"), cache))
+        if isinstance(extent, Callable):
+            im.set_extent(callable_else_value_no_cast(extent, param_excluder(params, "extent"), cache))
 
     controls._register_function(update, fig, params.keys())
 
@@ -782,6 +787,7 @@ def interactive_imshow(
     sca(ax)
     im = ax.imshow(
         new_data,
+        extent=callable_else_value_no_cast(extent, param_excluder(params, "extent")),
         alpha=callable_else_value_no_cast(alpha, param_excluder(params, "alpha")),
         vmin=callable_else_value_no_cast(vmin, param_excluder(params, "vmin")),
         vmax=callable_else_value_no_cast(vmax, param_excluder(params, "vmax")),
